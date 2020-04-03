@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalsamicSolutions.CodeCommit2Teams", "BalsamicSolutions.CodeCommit2Teams.csproj", "{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD6550C7-CCE4-4279-938D-1A974DA88CD5}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Lambda-Debug|Any CPU = Lambda-Debug|Any CPU
+		Lambda-Release|Any CPU = Lambda-Release|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Lambda-Debug|Any CPU.ActiveCfg = Lambda-Debug|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Lambda-Debug|Any CPU.Build.0 = Lambda-Debug|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Lambda-Release|Any CPU.ActiveCfg = Lambda-Release|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Lambda-Release|Any CPU.Build.0 = Lambda-Release|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{439E1C93-B1E2-40A7-9705-8B9D2F60CB86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6C6DC59-B858-4112-A0FF-C1E3B4160D4D}
+	EndGlobalSection
+EndGlobal
