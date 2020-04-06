@@ -4,7 +4,7 @@ This project is an AWS Lambda handler that forwards Code Commit events to a Team
 2. Create a Teams channel for your account and enable web hooks [https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) make sure to retain the web hook url for configuration of the lambda handler.
 3. Following these directions [https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-notify-lambda.html](https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-notify-lambda.html) create a new Lambda handler for code commit. Select one repository you want to notify on. Be sure to select all triggers for the new branch. When configuring the lambda upload the zip file from step one and set the Lambda hander name to   **BalsamicSolutions.CodeCommit2Teams::BalsamicSolutions.CodeCommit2Teams.LambdaNotificationHandlers::HandleBranchEvent**
 4. Edit the lambda configuration and set environment variables as follows:
-  1. **TeamsChannelUrl s** et to the web hook url from step 2
+  1. **TeamsChannelUrl** set to the web hook url from step 2
   2. **MaxChangesWarningThreshold** set to 50 or some other number as you see fit
   3. **TimeZone** set to the name of the time zone you want to use for notification date information. For example **Eastern Standard Time** , you can get all the time zone names from the **timeZones.json** file in the project.
 5. Edit the IAM role that was created by the Lambda wizard in step 3, add the **AWSCodeCommitReadOnly** permission policy to the role. This will allow the lambda handler to look up details about commits in CodeCommit
