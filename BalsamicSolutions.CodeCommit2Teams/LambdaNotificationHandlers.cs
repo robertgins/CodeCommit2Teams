@@ -84,7 +84,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
                 _MaxChangesWarningThreshold = maxChanges;
                 Console.WriteLine("MaxChangesWarningThreshold set to " + _MaxChangesWarningThreshold.ToString());
             }
-            //now collect our SlackChannelUrl
+            //now collect our TeamsChannelUrl
             tempVal = Environment.GetEnvironmentVariable("TeamsChannelUrl");
             if (!tempVal.IsNullOrWhiteSpace())
             {
@@ -96,7 +96,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
                     if (!(_AwsCredentials is AnonymousAWSCredentials))
                     {
                         _Enabled = true;
-                        Console.WriteLine("CodeCommit2Slack  is configured and enabled");
+                        Console.WriteLine("CodeCommit2Teams  is configured and enabled");
                     }
                     else
                     {
@@ -119,12 +119,12 @@ namespace BalsamicSolutions.CodeCommit2Teams
         /// This can be used for testing the outside of the Lambda environment.
         /// </summary>
         /// <param name="ccClient"></param>
-        public LambdaNotificationHandlers(AWSCredentials awsCreds, string slackChannelUrl)
+        public LambdaNotificationHandlers(AWSCredentials awsCreds, string teamsChannelUrl)
         {
             //no checking on this one, as we assume this is a test client
             //so if  its broken its your fault
             _AwsCredentials = awsCreds;
-            _TeamsChannelUrl = _TeamsChannelUrl = new Uri(slackChannelUrl); ;
+            _TeamsChannelUrl = _TeamsChannelUrl = new Uri(teamsChannelUrl); ;
             _Enabled = true;
             _TimeZone = TimeZoneInfo.Local;
         }
@@ -286,8 +286,8 @@ namespace BalsamicSolutions.CodeCommit2Teams
             {
                 //for this one we are just going to re use the existing notification body
                 string notificationMessage = input.Detail.NotificationBody;
-                ChannelClient slackClient = new ChannelClient(_TeamsChannelUrl);
-                slackClient.PostMessage(notificationMessage);
+                ChannelClient teamsClient = new ChannelClient(_TeamsChannelUrl);
+                teamsClient.PostMessage(notificationMessage);
             }
             Console.WriteLine("Completed HandlePullEvent");
         }
