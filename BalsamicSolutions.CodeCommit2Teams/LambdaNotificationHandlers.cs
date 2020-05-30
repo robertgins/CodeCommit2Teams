@@ -45,8 +45,8 @@ namespace BalsamicSolutions.CodeCommit2Teams
     {
         private readonly bool _Enabled = false;
         private readonly int _MaxChangesWarningThreshold = 100;
-        private readonly Uri _TeamsChannelUrl = null;
         private readonly TimeZoneInfo _TimeZone;
+        private List<Uri> _TeamsChannelUrls = new List<Uri>();
         private AWSCredentials _AwsCredentials = null;
 
         #region CTORs
@@ -69,10 +69,10 @@ namespace BalsamicSolutions.CodeCommit2Teams
                 {
                     _TimeZone = tempVal.TimeZoneById();
                 }
-                catch(TimeZoneNotFoundException)
+                catch (TimeZoneNotFoundException)
                 {
                     _TimeZone = TimeZoneInfo.Utc;
-                    Console.WriteLine("TimeZone setting is invalid " + tempVal); 
+                    Console.WriteLine("TimeZone setting is invalid " + tempVal);
                 }
             }
             Console.WriteLine("TimeZone set to " + _TimeZone.ToString()); ;
@@ -91,8 +91,27 @@ namespace BalsamicSolutions.CodeCommit2Teams
                 tempVal = tempVal.Trim();
                 try
                 {
-                    _TeamsChannelUrl = new Uri(tempVal);
-                    Console.WriteLine("TeamsChannelUrl set to " + _TeamsChannelUrl.ToString());
+                    Uri teamsChannelUrl = new Uri(tempVal);
+                    _TeamsChannelUrls.Add(teamsChannelUrl);
+                    for (int i = 1; i < 10; i++)
+                    {
+                        string extraName = $"TeamsChannelUrl{i}";
+                        tempVal = Environment.GetEnvironmentVariable(extraName);
+                        if (!tempVal.IsNullOrWhiteSpace())
+                        {
+                            tempVal = tempVal.Trim();
+                            try
+                            {
+                                teamsChannelUrl = new Uri(tempVal);
+                                _TeamsChannelUrls.Add(teamsChannelUrl);
+                            }
+                            catch (UriFormatException) { }
+                        }
+                    }
+                    foreach(Uri tempUri in _TeamsChannelUrls)
+                    {
+                        Console.WriteLine("TeamsChannelUrl set to " + tempUri.ToString());
+                    }
                     if (!(_AwsCredentials is AnonymousAWSCredentials))
                     {
                         _Enabled = true;
@@ -124,14 +143,14 @@ namespace BalsamicSolutions.CodeCommit2Teams
             //no checking on this one, as we assume this is a test client
             //so if  its broken its your fault
             _AwsCredentials = awsCreds;
-            _TeamsChannelUrl = _TeamsChannelUrl = new Uri(teamsChannelUrl); ;
+            _TeamsChannelUrls.Add(new Uri(teamsChannelUrl));
             _Enabled = true;
             _TimeZone = TimeZoneInfo.Local;
         }
 
         #endregion CTORs
 
- 
+
 
         #region Lambda handlers
 
@@ -156,7 +175,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
                 BranchTypes.Codecommit commitRecord = ccRecord.Codecommit;
                 //I have only seen multiple references nodes in the test data
                 //so we only process record [0]
-                if (null != commitRecord.References && commitRecord.References.Length > 0)
+                if (null != commitRecord && null != commitRecord.References && commitRecord.References.Length > 0)
                 {
                     bool isDelete = false;
                     bool isCreated = false;
@@ -181,14 +200,14 @@ namespace BalsamicSolutions.CodeCommit2Teams
                     Amazon.RegionEndpoint regionEndPoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
                     string userIdentityARN = ccRecord.UserIdentityArn;
                     string eventTimeAsText = ccRecord.EventTime;
-                    DateTime eventTime = DateTime.Parse(eventTimeAsText).ToUniversalTime(); 
+                    DateTime eventTime = DateTime.Parse(eventTimeAsText).ToUniversalTime();
                     DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(eventTime, _TimeZone);
 
                     using (AmazonCodeCommitClient codeCommit = new AmazonCodeCommitClient(_AwsCredentials, regionEndPoint))
                     {
                         GetRepositoryResponse repositoryInfo = GetRepositoryInfo(codeCommit, repositoryName);
                         GetCommitResponse commitInfo = GetCommitInfo(codeCommit, repositoryName, commitId);
-                        string authorName = userIdentityARN.LastSplitElement('/'); 
+                        string authorName = userIdentityARN.LastSplitElement('/');
                         string notificationMessage = "Unknown Lambda Event";
                         if (isCreated)
                         {
@@ -206,7 +225,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
                                 commitParentId = commitInfo.Commit.Parents[0];
                             }
                             List<Difference> commitDifferences = GetCommitDifferences(codeCommit, repositoryName, commitId, commitParentId, _MaxChangesWarningThreshold);
-                            if (_MaxChangesWarningThreshold >0 && commitDifferences.Count >= _MaxChangesWarningThreshold)
+                            if (_MaxChangesWarningThreshold > 0 && commitDifferences.Count >= _MaxChangesWarningThreshold)
                             {
                                 notificationMessage = GenerateBranchWarningMessage(authorName, commitId, localTime, commitInfo.Commit.Message, repositoryName, branchName);
                             }
@@ -215,7 +234,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
                                 notificationMessage = GenerateBranchCommitMessage(authorName, commitId, localTime, commitInfo.Commit.Message, repositoryName, branchName, commitDifferences);
                             }
                         }
-                        ChannelClient teamsClient = new ChannelClient(_TeamsChannelUrl);
+                        ChannelClient teamsClient = new ChannelClient(_TeamsChannelUrls);
                         teamsClient.PostMessage(notificationMessage);
                     }
                 }
@@ -286,7 +305,7 @@ namespace BalsamicSolutions.CodeCommit2Teams
             {
                 //for this one we are just going to re use the existing notification body
                 string notificationMessage = input.Detail.NotificationBody;
-                ChannelClient teamsClient = new ChannelClient(_TeamsChannelUrl);
+                ChannelClient teamsClient = new ChannelClient(_TeamsChannelUrls);
                 teamsClient.PostMessage(notificationMessage);
             }
             Console.WriteLine("Completed HandlePullEvent");

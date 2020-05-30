@@ -5,6 +5,7 @@
 //  -----------------------------------------------------------------------------
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
@@ -17,24 +18,15 @@ namespace BalsamicSolutions.CodeCommit2Teams
     /// </summary>
     public class ChannelClient
     {
-        private readonly Uri _ChannelAndTokenUrl;
-
-        /// <summary>
-        /// create a client to a channel with embeded token and channel information
-        /// </summary>
-        /// <param name="channelAndTokenUrl"></param>
-        public ChannelClient(string channelAndTokenUrl)
-        {
-            _ChannelAndTokenUrl = new Uri(channelAndTokenUrl);
-        }
+        private List<Uri> _ChannelsAndTokens = new List<Uri>();
 
         /// <summary>
         /// create a client to a channel with embeded token and channel information
         /// </summary>
         /// <param name="channelAndTokenUri"></param>
-        public ChannelClient(Uri channelAndTokenUri)
+        public ChannelClient(List<Uri> channelAndTokenUrls)
         {
-            _ChannelAndTokenUrl = channelAndTokenUri;
+            _ChannelsAndTokens = new List<Uri>(channelAndTokenUrls);
         }
 
         /// <summary>
@@ -60,21 +52,24 @@ namespace BalsamicSolutions.CodeCommit2Teams
             string jsonPayload = JsonConvert.SerializeObject(teamsMessage);
             using (HttpClient webClient = new HttpClient())
             {
-                try
+                foreach (Uri channelAndToken in _ChannelsAndTokens)
                 {
-                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, _ChannelAndTokenUrl);
-                    requestMessage.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                    HttpResponseMessage httpResponseMessage = webClient.SendAsync(requestMessage).Result;
-                    string responseText = httpResponseMessage.Content.ReadAsStringAsync().Result;
-                    System.Diagnostics.Trace.WriteLine(responseText);
-                    if (responseText.Contains("Microsoft Teams endpoint returned HTTP error 429",StringComparison.OrdinalIgnoreCase))
+                    try
                     {
-                        //TODO retry logic ?
+                        HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, channelAndToken);
+                        requestMessage.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                        HttpResponseMessage httpResponseMessage = webClient.SendAsync(requestMessage).Result;
+                        string responseText = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                        System.Diagnostics.Trace.WriteLine(responseText);
+                        if (responseText.Contains("Microsoft Teams endpoint returned HTTP error 429", StringComparison.OrdinalIgnoreCase))
+                        {
+                            //TODO retry logic ?
+                        }
                     }
-                }
-                catch (Exception postError)
-                {
-                    Console.WriteLine("Error posting to Teams " + postError.Message);
+                    catch (Exception postError)
+                    {
+                        Console.WriteLine("Error posting to Teams " + postError.Message);
+                    }
                 }
             }
         }
