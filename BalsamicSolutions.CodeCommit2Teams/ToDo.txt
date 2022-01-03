@@ -5,10 +5,10 @@
 		save  url with tokens 
 	Create Lambda with wizard 
 	https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-notify-lambda.html
-				Set environment for SlackChannelUrl
+				Set environment for TeamsChannelUrl
 				Set environment for MaxChangesWarningThreshold
 
-	Modify Lambda role to allow Codecommit readaonly access
+	Modify Lambda role to allow Codecommit readonly access
 	Setup triggers to lambda
 				one for new branch
 				one for branch delete
@@ -25,3 +25,9 @@ Futures
 	Embelishing the log with data from the GIT repo checkin (not just notes but actual file diff's)
 	Integrate with CodeBuild to package actual project
 	Add ratelimiting to the system
+
+prod enviorment
+MaxChangesWarningThreshold	50
+TeamsChannelUrl	https://reportingxpress.webhook.office.com/webhookb2/0d7a336d-d65a-468c-a4c8-69c8d9268e79@71495689-b267-480d-9c65-42e638840ff3/IncomingWebhook/9a52b542bbf542c790dbe08e27fd4639/8a51dd40-cbec-4365-a467-45d15ca69d1a
+TimeZone	Eastern Standard Time
+
