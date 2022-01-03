@@ -28,6 +28,6 @@ Futures
 
 prod enviorment
 MaxChangesWarningThreshold	50
-TeamsChannelUrl	https://reportingxpress.webhook.office.com/webhookb2/0d7a336d-d65a-468c-a4c8-69c8d9268e79@71495689-b267-480d-9c65-42e638840ff3/IncomingWebhook/9a52b542bbf542c790dbe08e27fd4639/8a51dd40-cbec-4365-a467-45d15ca69d1a
+TeamsChannelUrl	
 TimeZone	Eastern Standard Time
 
